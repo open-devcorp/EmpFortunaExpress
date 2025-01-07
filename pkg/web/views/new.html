@@ -1,0 +1,585 @@
+{{ define "content" }}
+<main class=" px-0 md:px-32 m-8  ">
+  <!-- Formulario -->
+  <form method="POST" action="/new" id="form-new">
+    <h1 class="text-4xl font-bold mb-6">Nueva Liquidación</h1>
+
+    <!-- Campo Partida -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+            <label
+              for="departure"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Partida
+            </label>
+            <select
+              id="departure"
+              name="departure"
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required     onchange="updateArrivalOptions()"            >
+              <option value="Lima">Lima</option>
+              <option value="Chimbote">Chimbote</option>
+            </select>
+          </div>
+          
+
+      <!-- Campo Conductor -->
+      <div class="flex gap-4">
+        <div class="w-full">
+            <label
+              for="driver"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Conductor</label 
+            >
+            <select
+              id="driver"
+              name="driver"
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+             required     onchange="updateTruckOptions()"
+             >
+              <option value="">Seleccione un conductor</option>
+              <option value="Aguilar">Aguilar</option>
+              <option value="Damian">Damian</option>
+            </select>
+  
+          
+        </div>
+
+        <div class="w-full">
+          <label
+            for="date"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Fecha</label
+          >
+          <input
+            type="date"
+            id="date"
+            name="date"
+            class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingrese la fecha" required
+          />
+        </div>
+      </div>
+
+      <!-- Campo Llegada -->
+      <div>
+        <label
+          for="arrival"
+          class="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Llegada
+        </label>
+        <select
+          id="arrival"
+          name="arrival"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+         required>
+          <option value="Lima">Lima</option>
+          <option value="Chimbote">Chimbote</option>
+        </select>
+      </div>
+      
+
+      <!-- Campo Tracto y Carreta -->
+      <div>
+        <label for="truck" class="block text-sm font-medium text-gray-700 mb-1">
+          Tracto y Carreta
+        </label>
+        <select
+          id="truck"
+          name="truck"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required >
+          <option value="B7A-714 / M4T979">B7A-714 / M4T979</option>
+          <option value="C3W-837 / BDL990">C3W-837 / BDL990</option>
+        </select>
+      </div>
+      
+
+  
+
+      <!-- Campo Flete -->
+      <div>
+        <label for="freight" class="block text-sm font-medium text-gray-700 mb-1">Flete</label>
+        <input
+          type="number"
+          id="freight"
+          name="freight"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar flete"
+          required
+          oninput="calcularFleteLiquido()" />
+      </div>
+      <!--DETRACCION-->
+      <div>
+        <label for="detraction" class="block text-sm font-medium text-gray-700 mb-1">Detracción</label>
+        <input
+          type="number"
+          id="detraction"
+          name="detraction"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar detracción"
+          required
+          oninput="calcularFleteLiquido()" />
+      </div>
+    </section>
+
+    <!-------------------------------------------Seccion 2--------------------------------------------------------->
+    <h2 class="text-4xl font-bold mb-6 mt-6">Guias y Facturas</h2>
+    <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+            <label
+              for="invoice"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Factura</label
+            >
+            <input
+              type="text"
+              id="invoice"
+              name="invoice"
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ingresar Factura"
+              required />
+          </div>
+      <div>
+        <label
+          for="gremission"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Guia Remision</label
+        >
+        <input
+          type="text"
+          id="gremission"
+          name="gremission"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar GR"
+          required />
+      </div>
+      <div>
+        <label
+          for="gtransport"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Guia Transportista 1</label
+        >
+        <input
+          type="gtransport"
+          id="gtransport"
+          name="gtransport"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar GT1"
+          required/>
+      </div>
+      <div>
+        <label
+          for="gtransport2"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Guia Transportista 2</label
+        >
+        <input
+          type="text"
+          id="gtransport2"
+          name="gtransport2"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar GT2"
+          required/>
+      </div>
+
+  
+    </section>
+    <!----------------------------------------------------Seccion 3---------------------------------------------------------------->
+
+    <h3 class="text-4xl font-bold mb-6 mt-6">Gastos</h3>
+    <section class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+            <label
+              for="peaje"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Peaje</label
+            >
+            <input
+              type="number"
+              id="peaje"
+              name="peaje"
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ingresar Peaje"
+              required   oninput="calcularGastoTotal()"
+              />
+          </div>
+      <div>
+        <label for="freight_liquid" class="block text-sm font-medium text-gray-700 mb-1">Flete Líquido</label>
+        <input
+          type="number"
+          id="freight_liquid"
+          name="freight_liquid"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          readonly
+          placeholder="Se calculará automáticamente" />
+      </div>
+      <div>
+       <!-- Lavadero -->
+
+        <label
+          for="laundry"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Lavadero</label
+        >
+        <input
+          type="number"
+          id="laundry"
+          name="laundry"
+          value = "1"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar lavadero"
+          required  oninput="calcularGastoTotal()"  />
+      </div>
+
+      <!-- Cochera -->
+      <div>
+        <label
+          for="garage"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Cochera</label
+        >
+        <input
+          type="number"
+          id="garage"
+          name="garage"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar cochera" value="1"
+          required  oninput="calcularGastoTotal()" />
+      </div>
+
+      <!-- Guardianía/Cargador -->
+      <div>
+        <label
+          for="guardianship"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Guardianía/Cargador</label
+        >
+        <input
+          type="number"
+          id="guardianship"
+          name="guardianship"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar guardianía/cargador" value = "1"
+          required  oninput="calcularGastoTotal()" />
+      </div>
+
+      <!-- Encarpar/Desencarpar -->
+      <div>
+        <label
+          for="cover"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Encarpar/Desencarpar</label
+        >
+        <input
+          type="number"
+          id="cover"
+          name="cover"
+          value="1"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar encarpado/desencarpado"
+          required  oninput="calcularGastoTotal()" />
+      </div>
+
+      <!-- Barrendero -->
+      <div>
+        <label
+          for="sweeper"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Barrendero</label
+        >
+        <input
+          type="number"
+          id="sweeper"
+          name="sweeper"
+          value="1"
+          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Ingresar barrendero"
+          required  oninput="calcularGastoTotal()" />
+      </div>
+
+      <!-- Chofer -->
+      <div class="flex gap-4">
+        <div>
+          <label
+            for="driver_pay"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Chofer</label
+          >
+          <input
+            type="number"
+            id="driver_pay"
+            name="driver_pay"
+            class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingresar chofer"
+            required  oninput="calcularGastoTotal()" />
+        </div>
+        <div>
+          <label
+            for="drive_description"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Descripción</label
+          >
+          <input
+            type="text"
+            id="drive_description"
+            name="drive_description"
+            class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value="-"
+            required/>
+        </div>
+      </div>
+
+      <!-- Combustible -->
+      <div class="flex gap-4">
+        <div>
+          <label
+            for="fuel"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Combustible</label
+          >
+          <input
+            type="number"
+            id="fuel"
+            name="fuel"
+            value="1"
+            class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ingresar combustible"
+            required  oninput="calcularGastoTotal()" />
+        </div>
+        <div>
+          <label
+            for="fuel_description"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Descripción</label
+          >
+          <input
+            type="text"
+            id="fuel_description"
+            name="fuel_description"
+            class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value="-"
+            required />
+        </div>
+      </div>
+    </section>
+
+    <!--------------------------------------------------- Sección Gastos Adicionales --------------------------------------------------->
+    <section>
+      <h3 class="text-4xl font-bold mb-6 mt-6">Gastos Adicionales</h3>
+      <div id="gastos-adicionales-container" class="grid grid-cols-2 gap-4">
+        <!-- Aquí se agregarán los inputs dinámicos -->
+      </div>
+      <button
+        type="button"
+       class="bg-green-100 text-green-700 text-md font-semibold px-2 py-1 rounded-lg mt-4 mb-4"
+            onclick="agregarGastoAdicional()"  
+      >
+        + Agregar Gasto
+      </button>
+    </section>
+    <section class="flex gap-4 justify-end md:flex-row flex-col">
+        <div>
+            
+        </div>
+        <!-- Gasto Total -->
+        <div>
+            <label
+              for="expense_total"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Gasto Total
+            </label>
+            <input
+              type="text"
+              id="expense_total"
+              name="expense_total"
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value="0"
+              readonly
+            />
+          </div>
+  
+        <!-- Líquido por Viaje -->
+        <div>
+            <label
+              for="liquid_trip"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Líquido por Viaje</label
+            >
+            <input
+              type="text"
+              id="liquid_trip"
+              name="liquid_trip"
+              readonly
+              class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Se calculará automáticamente"
+              oninput="calcularLiquidoPorViaje()"
+            />
+          </div>
+        <div>
+
+            <div class="mb-6"></div>
+            <button type="submit" class="btn-primary mb-0 sm:mb-10" id="save">Guardar</button>
+        </div>
+      </section>
+  
+
+      <script>
+           document.getElementById("form-new").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Evita el envío del formulario al presionar Enter
+        }
+    });
+
+    // Enviar el formulario solo cuando se haga clic en el botón "Guardar"
+    document.querySelector("#save").addEventListener("click", function(event) {
+        // No es necesario llamar a submit() aquí, ya que el formulario se enviará por defecto al hacer clic en el botón
+    });
+        function agregarGastoAdicional() {
+          const container = document.getElementById(
+            "gastos-adicionales-container"
+          );
+          const div = document.createElement("div");
+          div.classList.add("flex", "gap-4",  "items-left","md:items-center", "flex-col","sm:flex-row");
+      
+          const descripcion = document.createElement("input");
+          descripcion.type = "text";
+          descripcion.name = "gasto-descripcion[]";
+          descripcion.placeholder = "Nombre del gasto";
+          descripcion.classList.add(
+            "w-full",
+            "border",
+            "border-gray-300",
+            "rounded-md",
+            "p-2",
+            "focus:outline-none",
+            "focus:ring-2",
+            "focus:ring-blue-500",
+          );
+      
+          const monto = document.createElement("input");
+          monto.type = "number";
+          monto.name = "gasto-monto[]";
+          monto.placeholder = "Gasto";
+          monto.oninput = calcularGastoTotal;
+          monto.classList.add(
+            "w-full",
+            "border",
+            "border-gray-300",
+            "rounded-md",
+            "p-2",
+            "focus:outline-none",
+            "focus:ring-2",
+            "focus:ring-blue-500"
+          );
+      
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = "Eliminar";
+          button.classList.add("btn-secondary");
+          button.onclick = () => {
+            div.remove();
+            calcularGastoTotal();
+          };
+      
+          div.appendChild(descripcion);
+          div.appendChild(monto);
+          div.appendChild(button);
+          container.appendChild(div);
+        }
+      
+        function calcularFleteLiquido() {
+          const freight = parseFloat(document.getElementById('freight').value) || 0;
+          const detraction = parseFloat(document.getElementById('detraction').value) || 0;
+          const freightLiquid = freight - detraction;
+      
+          document.getElementById('freight_liquid').value = freightLiquid.toFixed(2);
+          calcularLiquidoPorViaje(); // Recalcular líquido por viaje
+        }
+      
+        function calcularGastoTotal() {
+          const laundry = parseFloat(document.getElementById('laundry').value) || 0;
+          const sweeper = parseFloat(document.getElementById('sweeper').value) || 0;
+          const cover = parseFloat(document.getElementById('cover').value) || 0;
+          const fuel = parseFloat(document.getElementById('fuel').value) || 0;
+          const toll = parseFloat(document.getElementById('peaje').value) || 0;
+          const garage = parseFloat(document.getElementById('garage').value) || 0;
+          const guardianship = parseFloat(document.getElementById('guardianship').value) || 0;
+          const driverPay = parseFloat(document.getElementById('driver_pay').value) || 0;
+      
+          let gastoTotal = 0.0;
+      
+          // Condiciones de suma según la lógica
+          if (laundry > 1) gastoTotal += laundry;
+          if (sweeper > 1) gastoTotal += sweeper;
+          if (cover > 1) gastoTotal += cover;
+          if (fuel > 1) gastoTotal += fuel;
+          if (garage > 1) gastoTotal += garage;
+          if (guardianship > 1) gastoTotal += guardianship;
+
+      
+          gastoTotal += toll  + driverPay;
+      
+          // Suma de los campos dinámicos
+          const gastosAdicionales = document.getElementsByName("gasto-monto[]");
+          for (let i = 0; i < gastosAdicionales.length; i++) {
+            const montoAdicional = parseFloat(gastosAdicionales[i].value) || 0;
+            gastoTotal += montoAdicional;
+          }
+      
+          document.getElementById('expense_total').value = gastoTotal.toFixed(2);
+          calcularLiquidoPorViaje(); // Recalcular líquido por viaje
+        }
+      
+        function calcularLiquidoPorViaje() {
+          const freightLiquid = parseFloat(document.getElementById('freight_liquid').value) || 0;
+          const expenseTotal = parseFloat(document.getElementById('expense_total').value) || 0;
+          const liquidTrip = freightLiquid - expenseTotal;
+      
+          document.getElementById('liquid_trip').value = liquidTrip.toFixed(2);
+        }
+      
+        // Asegúrate de llamar a calcularLiquidoPorViaje cuando cambien los valores de freight_liquid o expense_total
+        document.getElementById('freight_liquid').addEventListener('input', calcularLiquidoPorViaje);
+        document.getElementById('expense_total').addEventListener('input', calcularLiquidoPorViaje);
+          // Función para actualizar las opciones de llegada dependiendo de la partida
+  function updateArrivalOptions() {
+    const departure = document.getElementById("departure").value;
+    const arrivalSelect = document.getElementById("arrival");
+
+    // Limpiar las opciones de llegada actuales
+    arrivalSelect.innerHTML = "";
+
+    // Agregar la opción correspondiente a llegada según la partida seleccionada
+    if (departure === "Lima") {
+      arrivalSelect.innerHTML += '<option value="Chimbote">Chimbote</option>';
+    } else {
+      arrivalSelect.innerHTML += '<option value="Lima">Lima</option>';
+    }
+  }
+
+  // Llamar a la función al cargar la página para establecer las opciones iniciales
+  updateArrivalOptions();
+  function updateTruckOptions() {
+    const driver = document.getElementById("driver").value;
+    const truckSelect = document.getElementById("truck");
+
+    // Si el conductor es Aguilar, establecer la opción B7A-714 / M4T979
+    if (driver === "Aguilar") {
+      truckSelect.value = "B7A-714 / M4T979";
+    } else {
+      truckSelect.value = "C3W-837 / BDL990"; // Si no es Aguilar, elige la otra opción
+    }
+  }
+
+  // Llamar a la función al cargar la página para asegurarse de que esté configurado correctamente
+  updateTruckOptions();
+    </script>
+      
+  </form>
+</main>
+
+{{ end }}
