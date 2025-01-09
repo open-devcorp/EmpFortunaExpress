@@ -12,18 +12,16 @@ import (
 	handlers "fortuna-express-web/pkg/web/handlers"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql" // Importar el driver de MySQL
+	_ "github.com/mattn/go-sqlite3" // Importar el driver de SQLite
 )
 
-// NewDatabase crea y retorna una nueva conexión a la base de datos MySQL
+// NewDatabase crea y retorna una nueva conexión a la base de datos SQLite en memoria
 func NewDatabase() (*sql.DB, error) {
-	// Obtiene las credenciales de la base de datos desde las variables de entorno
+	// Conectar a la base de datos SQLite en memoria
+	connStr := ":memory:" // Usar SQLite en memoria
 
-	// Define la cadena de conexión a la base de datos MySQL
-	connStr := "root:password@tcp(localhost:3306)/fortuna"
-
-	// Conectar a la base de datos MySQL
-	db, err := sql.Open("mysql", connStr)
+	// Conectar a la base de datos SQLite
+	db, err := sql.Open("sqlite3", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database connection: %w", err)
 	}
@@ -33,7 +31,7 @@ func NewDatabase() (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	log.Println("Successfully connected to the MySQL database")
+	log.Println("Successfully connected to the SQLite in-memory database")
 
 	// Crear las tablas si no existen
 	err = createTables(db)
@@ -44,43 +42,43 @@ func NewDatabase() (*sql.DB, error) {
 	return db, nil
 }
 
-// createTables crea las tablas necesarias en la base de datos MySQL
+// createTables crea las tablas necesarias en la base de datos SQLite
 func createTables(db *sql.DB) error {
 	// SQL para crear las tablas
 	liquidationsQuery := `CREATE TABLE IF NOT EXISTS liquidations (
-		id INT AUTO_INCREMENT PRIMARY KEY,
-		departure VARCHAR(255) NOT NULL,
-		arrival VARCHAR(255) NOT NULL,
-		laundry DECIMAL(10, 2) NOT NULL,
-		garage DECIMAL(10, 2) NOT NULL,
-		guardianship DECIMAL(10, 2) NOT NULL,
-		cover DECIMAL(10, 2) NOT NULL,
-		sweeper DECIMAL(10, 2) NOT NULL,
-		driver VARCHAR(255) NOT NULL,
-		fuel DECIMAL(10, 2) NOT NULL,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		departure TEXT NOT NULL,
+		arrival TEXT NOT NULL,
+		laundry REAL NOT NULL,
+		garage REAL NOT NULL,
+		guardianship REAL NOT NULL,
+		cover REAL NOT NULL,
+		sweeper REAL NOT NULL,
+		driver TEXT NOT NULL,
+		fuel REAL NOT NULL,
 		date DATETIME NOT NULL,
-		freight DECIMAL(10, 2) NOT NULL,
-		freight_liquid DECIMAL(10, 2) NOT NULL,
-		detraction DECIMAL(10, 2) NOT NULL,
-		gremission VARCHAR(255) NOT NULL,
-		gtransport VARCHAR(255) NOT NULL,
-		gtransport2 VARCHAR(255) NOT NULL,
-		invoice VARCHAR(255) NOT NULL,
-		driver_pay DECIMAL(10, 2) NOT NULL,
+		freight REAL NOT NULL,
+		freight_liquid REAL NOT NULL,
+		detraction REAL NOT NULL,
+		gremission TEXT NOT NULL,
+		gtransport TEXT NOT NULL,
+		gtransport2 TEXT NOT NULL,
+		invoice TEXT NOT NULL,
+		driver_pay REAL NOT NULL,
 		drive_description TEXT NOT NULL,
 		fuel_description TEXT NOT NULL,
-		liquid_trip DECIMAL(10, 2) NOT NULL,
-		truck VARCHAR(255) NOT NULL,
-		expense_total DECIMAL(10, 2) NOT NULL,
-		toll DECIMAL(10, 2) NOT NULL,
+		liquid_trip REAL NOT NULL,
+		truck TEXT NOT NULL,
+		expense_total REAL NOT NULL,
+		toll REAL NOT NULL,
 		gast_adition BOOLEAN NOT NULL
 	);`
 
 	additionsQuery := `CREATE TABLE IF NOT EXISTS aditions (
-		id INT AUTO_INCREMENT PRIMARY KEY,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		description TEXT NOT NULL,
-		price DECIMAL(10, 2) NOT NULL,
-		liquidation_id INT NOT NULL,
+		price REAL NOT NULL,
+		liquidation_id INTEGER NOT NULL,
 		FOREIGN KEY (liquidation_id) REFERENCES liquidations(id)
 		ON DELETE CASCADE
 	);`
@@ -107,7 +105,7 @@ func main() {
 	// Inicializar el logger
 	logger := slog.Default()
 
-	// Inicializar la base de datos MySQL
+	// Inicializar la base de datos SQLite en memoria
 	database, err := NewDatabase()
 	if err != nil {
 		log.Fatal(err)

@@ -8,6 +8,8 @@ import (
 	"fortuna-express-web/pkg/interfaces"
 	"log/slog"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3" // Importar el driver SQLite
 )
 
 type liquidationRepository struct {
@@ -47,9 +49,9 @@ func (r *liquidationRepository) New(liquidation *entities.Liquidation) (int, err
 		return 0, fmt.Errorf("failed to add liquidation: %w", err)
 	}
 
-	// Luego, obtenemos el último ID insertado
+	// Luego, obtenemos el último ID insertado para SQLite (usamos last_insert_rowid)
 	var id int
-	err = r.db.QueryRowContext(ctx, "SELECT LAST_INSERT_ID()").Scan(&id)
+	err = r.db.QueryRowContext(ctx, "SELECT last_insert_rowid()").Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to get last insert id: %w", err)
 	}
@@ -86,9 +88,13 @@ func (r *liquidationRepository) List() ([]*entities.Liquidation, error) {
 
 		// Si el valor de dateRaw no es nulo, lo convertimos a time.Time
 		if len(dateRaw) > 0 {
-			parsedTime, err := time.Parse("2006-01-02 15:04:05", string(dateRaw))
+			parsedTime, err := time.Parse(time.RFC3339, string(dateRaw)) // Trata de parsear en formato ISO 8601
 			if err != nil {
-				return nil, fmt.Errorf("failed to parse date: %w", err)
+				// Si falla, intenta con el formato de MySQL
+				parsedTime, err = time.Parse("2006-01-02 15:04:05", string(dateRaw))
+				if err != nil {
+					return nil, fmt.Errorf("failed to parse date: %w", err)
+				}
 			}
 			l.Date = &parsedTime
 		}
@@ -106,6 +112,7 @@ func (r *liquidationRepository) Get(id int) (*entities.Liquidation, error) {
 	query := "SELECT * FROM liquidations WHERE id = ?"
 	var l entities.Liquidation
 	var dateRaw []byte // Cambiamos a []byte para manejar el valor crudo
+
 	err := r.db.QueryRowContext(ctx, query, id).Scan(
 		&l.ID, &l.Departure, &l.Arrival, &l.Laundry, &l.Garage, &l.Guardianship,
 		&l.Cover, &l.Sweeper, &l.Driver, &l.Fuel, &dateRaw, &l.Freight, &l.FreightLiquid,
@@ -119,7 +126,8 @@ func (r *liquidationRepository) Get(id int) (*entities.Liquidation, error) {
 
 	// Si el valor de dateRaw no es nulo, lo convertimos a time.Time
 	if len(dateRaw) > 0 {
-		parsedTime, err := time.Parse("2006-01-02 15:04:05", string(dateRaw))
+		// Asegurándonos de que el formato de la fecha sea ISO 8601
+		parsedTime, err := time.Parse("2006-01-02T15:04:05Z", string(dateRaw))
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse date: %w", err)
 		}
