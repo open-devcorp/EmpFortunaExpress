@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"fortuna-express-web/pkg/domain/entities"
 	"html/template"
 	"log"
@@ -76,6 +77,10 @@ func SetupRouter(r *gin.Engine, handlerLiquidation LiquidationsHandler) {
 
 	// Servir archivos estáticos
 	r.Static("/assets", filepath.Join(publicDir, "assets"))
+
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hola, Mundo!")
+	})
 
 	r.GET("/new", func(c *gin.Context) {
 		if GetSessionToken() == false {
