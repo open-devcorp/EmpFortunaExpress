@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: my-web-app
+    env: go
+    buildCommand: go build -tags netgo -ldflags '-s -w' -o app
+    startCommand: ./app
+    publish:
+      directory: .  # Asume que el ejecutable está en la raíz
+    plan: free  # O el plan que prefieras (starter, pro, etc.)
