@@ -246,7 +246,7 @@ func (l liquidationsHandler) New(user *entities.User, w http.ResponseWriter, r *
 	}
 
 	// Redirigir al home después de guardar
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 func (l liquidationsHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -266,7 +266,7 @@ func (l liquidationsHandler) LoginForm(w http.ResponseWriter, r *http.Request) {
 	}
 	if dni == "devcorp" && password == "devcorp" {
 		web.SetSessionToken(true)
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	} else {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)

@@ -194,7 +194,7 @@ func SetupRouter(r *gin.Engine, handlerLiquidation LiquidationsHandler) {
 	})
 
 	// Ruta para /home
-	r.GET("/home", func(c *gin.Context) {
+	r.GET("/", func(c *gin.Context) {
 		// Simula un usuario
 
 		if GetSessionToken() == false {
